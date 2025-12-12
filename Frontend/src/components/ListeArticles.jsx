@@ -60,10 +60,10 @@ const ListeArticles = ({ articles, onArticleUpdated, onArticleDeleted, canEdit =
               <div className="card h-100">
                 {article.image && (
                   <img 
-                    src={article.image} 
+                    src={`http://localhost:5000/uploads/${article.image}`} 
                     className="card-img-top" 
                     alt={article.libelle}
-                    style={{ height: '200px', objectFit: 'cover' }}
+                    style={{ height: '180px', objectFit: 'contain', backgroundColor: '#f8f9fa', padding: '10px' }}
                     onError={(e) => {
                       e.target.style.display = 'none';
                     }}

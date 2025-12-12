@@ -7,7 +7,8 @@ const UpdateArticle = ({ article, onClose, onSuccess }) => {
   const [prixAchat, setPrixAchat] = useState('');
   const [prixVente, setPrixVente] = useState('');
   const [quantite, setQuantite] = useState('');
-  const [image, setImage] = useState('');
+  const [imageFile, setImageFile] = useState(null);
+  const [currentImage, setCurrentImage] = useState('');
   const [categorieId, setCategorieId] = useState('');
   const [categories, setCategories] = useState([]);
   const [showNewCategorie, setShowNewCategorie] = useState(false);
@@ -33,7 +34,7 @@ const UpdateArticle = ({ article, onClose, onSuccess }) => {
       setPrixAchat(article.prixAchat || '');
       setPrixVente(article.prixVente || '');
       setQuantite(article.quantite || 0);
-      setImage(article.image || '');
+      setCurrentImage(article.image || '');
       setCategorieId(article.categorieId?._id || article.categorieId || '');
     }
   }, [article]);
@@ -66,16 +67,19 @@ const UpdateArticle = ({ article, onClose, onSuccess }) => {
     try {
       setLoading(true);
       
-      const articleData = {
-        libelle,
-        prixAchat: parseFloat(prixAchat),
-        prixVente: parseFloat(prixVente),
-        quantite: parseInt(quantite) || 0,
-        image: image || '',
-        categorieId: categorieId || undefined,
-      };
+      const formData = new FormData();
+      formData.append('libelle', libelle);
+      formData.append('prixAchat', parseFloat(prixAchat));
+      formData.append('prixVente', parseFloat(prixVente));
+      formData.append('quantite', parseInt(quantite) || 0);
+      if (imageFile) {
+        formData.append('image', imageFile);
+      }
+      if (categorieId) {
+        formData.append('categorieId', categorieId);
+      }
 
-      const response = await updateArticle(article._id, articleData);
+      const response = await updateArticle(article._id, formData);
       
       if (response.message === "Article modifié avec succès") {
         ToastSuccess(response.message);
@@ -167,14 +171,18 @@ const UpdateArticle = ({ article, onClose, onSuccess }) => {
               
               <div className="row">
                 <div className="col-md-12 mb-3">
-                  <label htmlFor="image" className="form-label">URL Image</label>
+                  <label htmlFor="image" className="form-label">Image</label>
+                  {currentImage && (
+                    <div className="mb-2">
+                      <small className="text-muted">Image actuelle: {currentImage}</small>
+                    </div>
+                  )}
                   <input
-                    type="text"
+                    type="file"
                     className="form-control"
                     id="image"
-                    value={image}
-                    onChange={(e) => setImage(e.target.value)}
-                    placeholder="https://..."
+                    onChange={(e) => setImageFile(e.target.files[0])}
+                    accept="image/*"
                   />
                 </div>
               </div>

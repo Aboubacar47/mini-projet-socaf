@@ -36,7 +36,11 @@ export const getArticles = async () => {
 
 export const createArticle = async (articleData) => {
   try {
-    const response = await axios.post(`${API_URL}/new-article`, articleData);
+    const response = await axios.post(`${API_URL}/new-article`, articleData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
     return response.data;
   } catch (error) {
     console.error('Erreur lors de la création de l\'article:', error);
@@ -46,7 +50,11 @@ export const createArticle = async (articleData) => {
 
 export const updateArticle = async (id, articleData) => {
   try {
-    const response = await axios.put(`${API_URL}/update-article/${id}`, articleData);
+    const response = await axios.put(`${API_URL}/update-article/${id}`, articleData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
     return response.data;
   } catch (error) {
     console.error('Erreur lors de la mise à jour de l\'article:', error);

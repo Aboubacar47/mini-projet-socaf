@@ -7,7 +7,7 @@ const AddArticle = ({ onArticleAdded }) => {
   const [prixAchat, setPrixAchat] = useState('');
   const [prixVente, setPrixVente] = useState('');
   const [quantite, setQuantite] = useState('');
-  const [image, setImage] = useState('');
+  const [imageFile, setImageFile] = useState(null);
   const [categorieId, setCategorieId] = useState('');
   const [categories, setCategories] = useState([]);
   const [showNewCategorie, setShowNewCategorie] = useState(false);
@@ -55,16 +55,19 @@ const AddArticle = ({ onArticleAdded }) => {
     try {
       setLoading(true);
       
-      const articleData = {
-        libelle,
-        prixAchat: parseFloat(prixAchat),
-        prixVente: parseFloat(prixVente),
-        quantite: parseInt(quantite) || 0,
-        image: image || '',
-        categorieId: categorieId || undefined,
-      };
+      const formData = new FormData();
+      formData.append('libelle', libelle);
+      formData.append('prixAchat', parseFloat(prixAchat));
+      formData.append('prixVente', parseFloat(prixVente));
+      formData.append('quantite', parseInt(quantite) || 0);
+      if (imageFile) {
+        formData.append('image', imageFile);
+      }
+      if (categorieId) {
+        formData.append('categorieId', categorieId);
+      }
 
-      const response = await createArticle(articleData);
+      const response = await createArticle(formData);
       
       if (response.message === "Article ajouté avec succès") {
         ToastSuccess(response.message);
@@ -74,7 +77,7 @@ const AddArticle = ({ onArticleAdded }) => {
         setPrixAchat('');
         setPrixVente('');
         setQuantite('');
-        setImage('');
+        setImageFile(null);
         setCategorieId('');
         
         // Notifier le parent
@@ -156,14 +159,13 @@ const AddArticle = ({ onArticleAdded }) => {
           
           <div className="row">
             <div className="col-md-12 mb-3">
-              <label htmlFor="image" className="form-label">URL Image</label>
+              <label htmlFor="image" className="form-label">Image</label>
               <input
-                type="text"
+                type="file"
                 className="form-control"
                 id="image"
-                value={image}
-                onChange={(e) => setImage(e.target.value)}
-                placeholder="https://..."
+                onChange={(e) => setImageFile(e.target.files[0])}
+                accept="image/*"
               />
             </div>
           </div>
